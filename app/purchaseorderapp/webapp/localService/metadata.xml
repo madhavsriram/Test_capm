@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+    <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/Common.xml">
+        <edmx:Include Alias="Common" Namespace="com.sap.vocabularies.Common.v1"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Core.V1.xml">
+        <edmx:Include Alias="Core" Namespace="Org.OData.Core.V1"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/UI.xml">
+        <edmx:Include Alias="UI" Namespace="com.sap.vocabularies.UI.v1"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Validation.V1.xml">
+        <edmx:Include Alias="Validation" Namespace="Org.OData.Validation.V1"/>
+    </edmx:Reference>
+    <edmx:DataServices>
+        <Schema Namespace="CatalogService" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+            <EntityContainer Name="EntityContainer">
+                <EntitySet Name="EmployeeSet" EntityType="CatalogService.EmployeeSet"/>
+                <EntitySet Name="AdressSet" EntityType="CatalogService.AdressSet">
+                    <NavigationPropertyBinding Path="businesspartner" Target="BusinessPartnerSet"/>
+                </EntitySet>
+                <EntitySet Name="BusinessPartnerSet" EntityType="CatalogService.BusinessPartnerSet">
+                    <NavigationPropertyBinding Path="ADDRESS_GUID" Target="AdressSet"/>
+                </EntitySet>
+                <EntitySet Name="ProdTestSet" EntityType="CatalogService.ProdTestSet"/>
+                <EntitySet Name="ProductSet" EntityType="CatalogService.ProductSet"/>
+                <EntitySet Name="adSet" EntityType="CatalogService.adSet">
+                    <NavigationPropertyBinding Path="TOBPA" Target="bpaSet"/>
+                </EntitySet>
+                <EntitySet Name="bpaSet" EntityType="CatalogService.bpaSet">
+                    <NavigationPropertyBinding Path="ADDRESS_GUID" Target="adSet"/>
+                </EntitySet>
+                <EntitySet Name="pdSet" EntityType="CatalogService.pdSet">
+                    <NavigationPropertyBinding Path="SUPPLIER_GUID" Target="bpaSet"/>
+                </EntitySet>
+                <EntitySet Name="PurchaseOrderSet" EntityType="CatalogService.PurchaseOrderSet">
+                    <NavigationPropertyBinding Path="items" Target="PoItemsSet"/>
+                </EntitySet>
+                <EntitySet Name="PoItemsSet" EntityType="CatalogService.PoItemsSet">
+                    <NavigationPropertyBinding Path="PARENT_KEY" Target="PurchaseOrderSet"/>
+                    <NavigationPropertyBinding Path="toPO" Target="PurchaseOrderSet"/>
+                </EntitySet>
+                <EntitySet Name="POs" EntityType="CatalogService.POs">
+                    <NavigationPropertyBinding Path="PARTNER_GUID" Target="bpaSet"/>
+                    <NavigationPropertyBinding Path="toitems" Target="POitems"/>
+                </EntitySet>
+                <EntitySet Name="POitems" EntityType="CatalogService.POitems">
+                    <NavigationPropertyBinding Path="PARENT_KEY" Target="POs"/>
+                    <NavigationPropertyBinding Path="PRODUCT_GUID" Target="pdSet"/>
+                </EntitySet>
+            </EntityContainer>
+            <EntityType Name="EmployeeSet">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="UserId" Type="Edm.Int16"/>
+                <Property Name="FirstName" Type="Edm.String" MaxLength="32"/>
+                <Property Name="LastName" Type="Edm.String" MaxLength="32"/>
+                <Property Name="Salary" Type="Edm.Decimal" Scale="2" Precision="15"/>
+                <Property Name="Active" Type="Edm.Boolean"/>
+            </EntityType>
+            <EntityType Name="AdressSet">
+                <Key>
+                    <PropertyRef Name="NODE_KEY"/>
+                </Key>
+                <Property Name="NODE_KEY" Type="Edm.String" MaxLength="32" Nullable="false"/>
+                <Property Name="CITY" Type="Edm.String" MaxLength="64"/>
+                <Property Name="POSTAL_CODE" Type="Edm.String" MaxLength="14"/>
+                <Property Name="COUNTRY" Type="Edm.String" MaxLength="14"/>
+                <NavigationProperty Name="businesspartner" Type="CatalogService.BusinessPartnerSet" Partner="ADDRESS_GUID">
+                    <ReferentialConstraint Property="NODE_KEY" ReferencedProperty="ADDRESS_GUID_NODE_KEY"/>
+                </NavigationProperty>
+            </EntityType>
+            <EntityType Name="BusinessPartnerSet">
+                <Key>
+                    <PropertyRef Name="NODE_KEY"/>
+                </Key>
+                <Property Name="NODE_KEY" Type="Edm.String" MaxLength="32" Nullable="false"/>
+                <Property Name="BP_ROLE" Type="Edm.String" MaxLength="2"/>
+                <Property Name="EMAIL_ADDRESS" Type="Edm.String" MaxLength="128"/>
+                <Property Name="PHONE_NUMBER" Type="Edm.String" MaxLength="20"/>
+                <Property Name="FAX_NUMBER" Type="Edm.String" MaxLength="20"/>
+                <Property Name="WEB_ADDRESS" Type="Edm.String" MaxLength="120"/>
+                <NavigationProperty Name="ADDRESS_GUID" Type="CatalogService.AdressSet" Partner="businesspartner">
+                    <ReferentialConstraint Property="ADDRESS_GUID_NODE_KEY" ReferencedProperty="NODE_KEY"/>
+                </NavigationProperty>
+                <Property Name="ADDRESS_GUID_NODE_KEY" Type="Edm.String" MaxLength="32"/>
+                <Property Name="BP_ID" Type="Edm.String" MaxLength="18"/>
+                <Property Name="COMPANY_NAME" Type="Edm.String" MaxLength="120"/>
+            </EntityType>
+            <EntityType Name="ProdTestSet">
+                <Key>
+                    <PropertyRef Name="NODE_KEY"/>
+                </Key>
+                <Property Name="NODE_KEY" Type="Edm.String" MaxLength="32" Nullable="false"/>
+                <Property Name="PARENT_KEY" Type="Edm.String" MaxLength="32"/>
+                <Property Name="LANGUAGE" Type="Edm.String" MaxLength="1"/>
+                <Property Name="TEXT" Type="Edm.String" MaxLength="256"/>
+            </EntityType>
+            <EntityType Name="ProductSet">
+                <Key>
+                    <PropertyRef Name="NODE_KEY"/>
+                </Key>
+                <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="NODE_KEY" Type="Edm.String" MaxLength="32" Nullable="false"/>
+                <Property Name="PRODUCT_ID" Type="Edm.String" MaxLength="16"/>
+                <Property Name="CATEGORY" Type="Edm.String" MaxLength="256"/>
+                <Property Name="CREATED_BY" Type="Edm.String" MaxLength="32"/>
+                <Property Name="CREATED_AT" Type="Edm.String" MaxLength="128"/>
+                <Property Name="CHANGED_BY" Type="Edm.String" MaxLength="32"/>
+                <Property Name="CHANGED_AT" Type="Edm.String" MaxLength="128"/>
+                <Property Name="NAME_GUID" Type="Edm.String" MaxLength="32"/>
+                <Property Name="DESC_GUID" Type="Edm.String" MaxLength="32"/>
+                <Property Name="SUPPLIER_GUID" Type="Edm.String" MaxLength="32"/>
+                <Property Name="CURRENCY_CODE" Type="Edm.String" MaxLength="4"/>
+                <Property Name="PRICE" Type="Edm.Decimal" Scale="2" Precision="15"/>
+            </EntityType>
+            <EntityType Name="adSet">
+                <Key>
+                    <PropertyRef Name="NODE_KEY"/>
+                </Key>
+                <Property Name="NODE_KEY" Type="Edm.String" MaxLength="32" Nullable="false"/>
+                <Property Name="CITY" Type="Edm.String" MaxLength="64"/>
+                <Property Name="POSTAL_CODE" Type="Edm.String" MaxLength="10"/>
+                <Property Name="STREET" Type="Edm.String" MaxLength="128"/>
+                <Property Name="BUILDING" Type="Edm.String" MaxLength="12"/>
+                <Property Name="COUNTRY" Type="Edm.String" MaxLength="4"/>
+                <Property Name="ADDRESS_TYPE" Type="Edm.Int32"/>
+                <NavigationProperty Name="TOBPA" Type="Collection(CatalogService.bpaSet)" Partner="ADDRESS_GUID"/>
+            </EntityType>
+            <EntityType Name="bpaSet">
+                <Key>
+                    <PropertyRef Name="NODE_KEY"/>
+                </Key>
+                <Property Name="NODE_KEY" Type="Edm.String" MaxLength="32" Nullable="false"/>
+                <Property Name="BP_ROLE" Type="Edm.Int32"/>
+                <Property Name="PHONE_NUMBER" Type="Edm.String" MaxLength="20"/>
+                <NavigationProperty Name="ADDRESS_GUID" Type="CatalogService.adSet" Partner="TOBPA">
+                    <ReferentialConstraint Property="ADDRESS_GUID_NODE_KEY" ReferencedProperty="NODE_KEY"/>
+                </NavigationProperty>
+                <Property Name="ADDRESS_GUID_NODE_KEY" Type="Edm.String" MaxLength="32"/>
+                <Property Name="BP_ID" Type="Edm.Int16"/>
+                <Property Name="COMPANY_NAME" Type="Edm.String" MaxLength="128"/>
+                <Property Name="CURRENCY_CODE" Type="Edm.String" MaxLength="4"/>
+            </EntityType>
+            <EntityType Name="pdSet">
+                <Key>
+                    <PropertyRef Name="NODE_KEY"/>
+                </Key>
+                <Property Name="NODE_KEY" Type="Edm.String" MaxLength="32" Nullable="false"/>
+                <Property Name="PRODUCT_ID" Type="Edm.String" MaxLength="16"/>
+                <Property Name="TYPE_CODE" Type="Edm.String" MaxLength="4"/>
+                <Property Name="CATEGORY" Type="Edm.String" MaxLength="256"/>
+                <Property Name="NAME_GUID" Type="Edm.String" MaxLength="32"/>
+                <Property Name="DESC_GUID" Type="Edm.String" MaxLength="32"/>
+                <NavigationProperty Name="SUPPLIER_GUID" Type="CatalogService.bpaSet">
+                    <ReferentialConstraint Property="SUPPLIER_GUID_NODE_KEY" ReferencedProperty="NODE_KEY"/>
+                </NavigationProperty>
+                <Property Name="SUPPLIER_GUID_NODE_KEY" Type="Edm.String" MaxLength="32"/>
+                <Property Name="CURRENCY_CODE" Type="Edm.String" MaxLength="4"/>
+                <Property Name="PRICE" Type="Edm.Decimal" Scale="2" Precision="15"/>
+            </EntityType>
+            <EntityType Name="PurchaseOrderSet">
+                <Key>
+                    <PropertyRef Name="NODE_KEY"/>
+                </Key>
+                <Property Name="GROSS_AMOUNT" Type="Edm.Decimal" Scale="2" Precision="15"/>
+                <Property Name="NET_AMOUNT" Type="Edm.Decimal" Scale="2" Precision="15"/>
+                <Property Name="TAX_AMOUNT" Type="Edm.Decimal" Scale="2" Precision="15"/>
+                <Property Name="CURRENCY_CODE" Type="Edm.String" MaxLength="4"/>
+                <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="NODE_KEY" Type="Edm.String" MaxLength="32" Nullable="false"/>
+                <Property Name="SO_GUID" Type="Edm.String" MaxLength="32"/>
+                <Property Name="DLY_NOTE_NUMBER" Type="Edm.Int16"/>
+                <Property Name="CREATED_BY" Type="Edm.String" MaxLength="32"/>
+                <Property Name="CREATED_AT" Type="Edm.String" MaxLength="32"/>
+                <Property Name="CHANGED_BY" Type="Edm.String" MaxLength="32"/>
+                <Property Name="CHANGED_AT" Type="Edm.String" MaxLength="32"/>
+                <Property Name="BUYER_GUID" Type="Edm.String" MaxLength="32"/>
+                <Property Name="PAYMENT_STATUS" Type="Edm.String" MaxLength="1"/>
+                <NavigationProperty Name="items" Type="Collection(CatalogService.PoItemsSet)" Partner="PARENT_KEY"/>
+            </EntityType>
+            <EntityType Name="PoItemsSet">
+                <Key>
+                    <PropertyRef Name="NODE_KEY"/>
+                </Key>
+                <Property Name="GROSS_AMOUNT" Type="Edm.Decimal" Scale="2" Precision="15"/>
+                <Property Name="NET_AMOUNT" Type="Edm.Decimal" Scale="2" Precision="15"/>
+                <Property Name="TAX_AMOUNT" Type="Edm.Decimal" Scale="2" Precision="15"/>
+                <Property Name="CURRENCY_CODE" Type="Edm.String" MaxLength="4"/>
+                <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="NODE_KEY" Type="Edm.String" MaxLength="32" Nullable="false"/>
+                <NavigationProperty Name="PARENT_KEY" Type="CatalogService.PurchaseOrderSet" Partner="items">
+                    <ReferentialConstraint Property="PARENT_KEY_NODE_KEY" ReferencedProperty="NODE_KEY"/>
+                </NavigationProperty>
+                <Property Name="PARENT_KEY_NODE_KEY" Type="Edm.String" MaxLength="32"/>
+                <Property Name="SO_ITEM_GUID" Type="Edm.String" MaxLength="32"/>
+                <Property Name="QUANTITY" Type="Edm.Int16"/>
+                <Property Name="QUANTITY_UNIT" Type="Edm.String" MaxLength="4"/>
+                <Property Name="PRODUCT_GUID" Type="Edm.String" MaxLength="32"/>
+                <Property Name="INV_ITEM_POS" Type="Edm.Int32"/>
+                <NavigationProperty Name="toPO" Type="CatalogService.PurchaseOrderSet"/>
+            </EntityType>
+            <EntityType Name="POs">
+                <Key>
+                    <PropertyRef Name="NODE_KEY"/>
+                </Key>
+                <Property Name="NODE_KEY" Type="Edm.String" MaxLength="32" Nullable="false"/>
+                <Property Name="PO_ID" Type="Edm.Int16"/>
+                <Property Name="NOTE_GUID" Type="Edm.String" MaxLength="32"/>
+                <NavigationProperty Name="PARTNER_GUID" Type="CatalogService.bpaSet">
+                    <ReferentialConstraint Property="PARTNER_GUID_NODE_KEY" ReferencedProperty="NODE_KEY"/>
+                </NavigationProperty>
+                <Property Name="PARTNER_GUID_NODE_KEY" Type="Edm.String" MaxLength="32"/>
+                <Property Name="CURRENCY_CODE" Type="Edm.String" MaxLength="4"/>
+                <Property Name="GROSS_AMOUNT" Type="Edm.Decimal" Scale="2" Precision="15"/>
+                <Property Name="NET_AMOUNT" Type="Edm.Decimal" Scale="2" Precision="15"/>
+                <Property Name="TAX_AMOUNT" Type="Edm.Decimal" Scale="2" Precision="15"/>
+                <NavigationProperty Name="toitems" Type="Collection(CatalogService.POitems)" Partner="PARENT_KEY"/>
+                <Property Name="NOTE" Type="Edm.String" MaxLength="256"/>
+            </EntityType>
+            <EntityType Name="POitems">
+                <Key>
+                    <PropertyRef Name="NODE_KEY"/>
+                </Key>
+                <Property Name="NODE_KEY" Type="Edm.String" MaxLength="32" Nullable="false"/>
+                <NavigationProperty Name="PARENT_KEY" Type="CatalogService.POs" Partner="toitems">
+                    <ReferentialConstraint Property="PARENT_KEY_NODE_KEY" ReferencedProperty="NODE_KEY"/>
+                </NavigationProperty>
+                <Property Name="PARENT_KEY_NODE_KEY" Type="Edm.String" MaxLength="32"/>
+                <Property Name="PO_ITEM_POS" Type="Edm.Int32"/>
+                <NavigationProperty Name="PRODUCT_GUID" Type="CatalogService.pdSet">
+                    <ReferentialConstraint Property="PRODUCT_GUID_NODE_KEY" ReferencedProperty="NODE_KEY"/>
+                </NavigationProperty>
+                <Property Name="PRODUCT_GUID_NODE_KEY" Type="Edm.String" MaxLength="32"/>
+                <Property Name="NOTE_GUID" Type="Edm.String" MaxLength="32"/>
+                <Property Name="CURRENCY_CODE" Type="Edm.String" MaxLength="4"/>
+                <Property Name="GROSS_AMOUNT" Type="Edm.Decimal" Scale="2" Precision="15"/>
+                <Property Name="NET_AMOUNT" Type="Edm.Decimal" Scale="2" Precision="15"/>
+                <Property Name="TAX_AMOUNT" Type="Edm.Decimal" Scale="2" Precision="15"/>
+            </EntityType>
+            <Function Name="largestOrder" IsBound="true" IsComposable="false" EntitySetPath="in">
+                <Parameter Name="in" Type="CatalogService.POs"/>
+                <ReturnType Type="Collection(CatalogService.POs)" Nullable="false"/>
+            </Function>
+            <Action Name="boost" IsBound="true">
+                <Parameter Name="in" Type="CatalogService.POs"/>
+            </Action>
+            <Annotations Target="CatalogService.EmployeeSet/createdAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="{i18n>CreatedAt}"/>
+                </Annotations>
+                <Annotations Target="CatalogService.EmployeeSet/createdBy">
+                    <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                    <Annotation Term="Core.Immutable" Bool="true"/>
+                    <Annotation Term="Core.Computed" Bool="true"/>
+                    <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+                        <Annotation Term="Common.Label" String="{i18n>CreatedBy}"/>
+                        </Annotations>
+                        <Annotations Target="CatalogService.EmployeeSet/modifiedAt">
+                            <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                            <Annotation Term="Core.Computed" Bool="true"/>
+                            <Annotation Term="Common.Label" String="{i18n>ChangedAt}"/>
+                            </Annotations>
+                            <Annotations Target="CatalogService.EmployeeSet/modifiedBy">
+                                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                                <Annotation Term="Core.Computed" Bool="true"/>
+                                <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+                                    <Annotation Term="Common.Label" String="{i18n>ChangedBy}"/>
+                                    </Annotations>
+                                    <Annotations Target="CatalogService.BusinessPartnerSet/EMAIL_ADDRESS">
+                                        <Annotation Term="Validation.Pattern" String="[a-z0-9]+@[a-z]+\.[a-z]{2,3}"/>
+                                    </Annotations>
+                                    <Annotations Target="CatalogService.BusinessPartnerSet/PHONE_NUMBER">
+                                        <Annotation Term="Validation.Pattern" String="/^(\([0-9]{3}\) |[0-9]{3}-)[0-9]{3}-[0-9]{4}/"/>
+                                    </Annotations>
+                                    <Annotations Target="CatalogService.BusinessPartnerSet/FAX_NUMBER">
+                                        <Annotation Term="Validation.Pattern" String="/^(\([0-9]{3}\) |[0-9]{3}-)[0-9]{3}-[0-9]{4}/"/>
+                                    </Annotations>
+                                    <Annotations Target="CatalogService.ProductSet/createdAt">
+                                        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                                        <Annotation Term="Core.Immutable" Bool="true"/>
+                                        <Annotation Term="Core.Computed" Bool="true"/>
+                                        <Annotation Term="Common.Label" String="{i18n>CreatedAt}"/>
+                                        </Annotations>
+                                        <Annotations Target="CatalogService.ProductSet/createdBy">
+                                            <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                                            <Annotation Term="Core.Immutable" Bool="true"/>
+                                            <Annotation Term="Core.Computed" Bool="true"/>
+                                            <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+                                                <Annotation Term="Common.Label" String="{i18n>CreatedBy}"/>
+                                                </Annotations>
+                                                <Annotations Target="CatalogService.ProductSet/modifiedAt">
+                                                    <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                                                    <Annotation Term="Core.Computed" Bool="true"/>
+                                                    <Annotation Term="Common.Label" String="{i18n>ChangedAt}"/>
+                                                    </Annotations>
+                                                    <Annotations Target="CatalogService.ProductSet/modifiedBy">
+                                                        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                                                        <Annotation Term="Core.Computed" Bool="true"/>
+                                                        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+                                                            <Annotation Term="Common.Label" String="{i18n>ChangedBy}"/>
+                                                            </Annotations>
+                                                            <Annotations Target="CatalogService.bpaSet/PHONE_NUMBER">
+                                                                <Annotation Term="Validation.Pattern" String="/^(\([0-9]{3}\) |[0-9]{3}-)[0-9]{3}-[0-9]{4}/"/>
+                                                            </Annotations>
+                                                            <Annotations Target="CatalogService.PurchaseOrderSet/createdAt">
+                                                                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                                                                <Annotation Term="Core.Immutable" Bool="true"/>
+                                                                <Annotation Term="Core.Computed" Bool="true"/>
+                                                                <Annotation Term="Common.Label" String="{i18n>CreatedAt}"/>
+                                                                </Annotations>
+                                                                <Annotations Target="CatalogService.PurchaseOrderSet/createdBy">
+                                                                    <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                                                                    <Annotation Term="Core.Immutable" Bool="true"/>
+                                                                    <Annotation Term="Core.Computed" Bool="true"/>
+                                                                    <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+                                                                        <Annotation Term="Common.Label" String="{i18n>CreatedBy}"/>
+                                                                        </Annotations>
+                                                                        <Annotations Target="CatalogService.PurchaseOrderSet/modifiedAt">
+                                                                            <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                                                                            <Annotation Term="Core.Computed" Bool="true"/>
+                                                                            <Annotation Term="Common.Label" String="{i18n>ChangedAt}"/>
+                                                                            </Annotations>
+                                                                            <Annotations Target="CatalogService.PurchaseOrderSet/modifiedBy">
+                                                                                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                                                                                <Annotation Term="Core.Computed" Bool="true"/>
+                                                                                <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+                                                                                    <Annotation Term="Common.Label" String="{i18n>ChangedBy}"/>
+                                                                                    </Annotations>
+                                                                                    <Annotations Target="CatalogService.PurchaseOrderSet/NODE_KEY">
+                                                                                        <Annotation Term="Common.Label" String="{i18n>n_key}"/>
+                                                                                        </Annotations>
+                                                                                        <Annotations Target="CatalogService.PurchaseOrderSet/SO_GUID">
+                                                                                            <Annotation Term="Common.Label" String="{i18n>so_key}"/>
+                                                                                            </Annotations>
+                                                                                            <Annotations Target="CatalogService.PurchaseOrderSet/BUYER_GUID">
+                                                                                                <Annotation Term="Common.Label" String="{i18n>b_guid}"/>
+                                                                                                </Annotations>
+                                                                                                <Annotations Target="CatalogService.PoItemsSet/createdAt">
+                                                                                                    <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                                                                                                    <Annotation Term="Core.Immutable" Bool="true"/>
+                                                                                                    <Annotation Term="Core.Computed" Bool="true"/>
+                                                                                                    <Annotation Term="Common.Label" String="{i18n>CreatedAt}"/>
+                                                                                                    </Annotations>
+                                                                                                    <Annotations Target="CatalogService.PoItemsSet/createdBy">
+                                                                                                        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                                                                                                        <Annotation Term="Core.Immutable" Bool="true"/>
+                                                                                                        <Annotation Term="Core.Computed" Bool="true"/>
+                                                                                                        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+                                                                                                            <Annotation Term="Common.Label" String="{i18n>CreatedBy}"/>
+                                                                                                            </Annotations>
+                                                                                                            <Annotations Target="CatalogService.PoItemsSet/modifiedAt">
+                                                                                                                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                                                                                                                <Annotation Term="Core.Computed" Bool="true"/>
+                                                                                                                <Annotation Term="Common.Label" String="{i18n>ChangedAt}"/>
+                                                                                                                </Annotations>
+                                                                                                                <Annotations Target="CatalogService.PoItemsSet/modifiedBy">
+                                                                                                                    <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                                                                                                                    <Annotation Term="Core.Computed" Bool="true"/>
+                                                                                                                    <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+                                                                                                                        <Annotation Term="Common.Label" String="{i18n>ChangedBy}"/>
+                                                                                                                        </Annotations>
+                                                                                                                        <Annotations Target="CatalogService.PoItemsSet/PARENT_KEY">
+                                                                                                                            <Annotation Term="Common.Label" String="{i18n>p_key}"/>
+                                                                                                                            </Annotations>
+                                                                                                                            <Annotations Target="CatalogService.PoItemsSet/PARENT_KEY_NODE_KEY">
+                                                                                                                                <Annotation Term="Common.Label" String="{i18n>p_key}"/>
+                                                                                                                                </Annotations>
+                                                                                                                                <Annotations Target="CatalogService.PoItemsSet/SO_ITEM_GUID">
+                                                                                                                                    <Annotation Term="Common.Label" String="{i18n>so_item_guid}"/>
+                                                                                                                                    </Annotations>
+                                                                                                                                    <Annotations Target="CatalogService.POs/GROSS_AMOUNT">
+                                                                                                                                        <Annotation Term="Core.Computed" Bool="true"/>
+                                                                                                                                        <Annotation Term="Common.Label" String="{i18n>g_Amount}"/>
+                                                                                                                                        </Annotations>
+                                                                                                                                    </Schema>
+                                                                                                                                </edmx:DataServices>
+                                                                                                                            </edmx:Edmx>

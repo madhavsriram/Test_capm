@@ -1,0 +1,12 @@
+### get catalog service
+GET http:localhost:4004/CatalogService/ 
+### get matadata
+GET http:localhost:4004/CatalogService/$metadata
+### get top 2 employees
+GET http:localhost:4004/CatalogService/EmployeeSet?$top=2
+
+### get pos
+GET http:localhost:4004/CatalogService/POs
+
+
+

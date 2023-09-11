@@ -1,0 +1,42 @@
+{
+  "name": "1Capm",
+  "version": "1.0.0",
+  "description": "A simple CAP project.",
+  "repository": "<Add your repository here>",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@sap/cds": "^6.8.2",
+    "@sap/cds-hana": "^2",
+    "@sap/cds-odata-v2-adapter-proxy": "^1.9.21",
+    "express": "^4",
+    "hdb": "^0.19.5"
+  },
+  "scripts": {
+    "start": "cds-serve",
+    "watch-purchaseorderapp": "cds watch --open ms.app.purchaseorderapp/index.html?sap-ui-xx-viewCache=false --livereload false"
+  },
+  "devDependencies": {
+    "cds-plugin-ui5": "^0.1.4",
+    "sqlite3": "^5.1.6"
+  },
+  "cds": {
+    "hana": {
+      "deploy-format": "hdbtable"
+    },
+    "requires": {
+      "db": {
+        "kind": "hana",
+        "credentials": {
+          "database": "ms.db"
+        }
+      }
+    }
+  },
+  "workspaces": [
+    "app/*"
+  ],
+  "sapux": [
+    "app/purchaseorderapp"
+  ]
+}
